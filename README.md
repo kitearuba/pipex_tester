@@ -9,18 +9,6 @@ Welcome to the **Pipex Tester**! 🎉 This project is designed to **automate tes
 
 ---
 
-## 📑 **Table of Contents**Here's a colorful and visually appealing README for your **Pipex Tester** based on the style you provided for the **pipex** README:
-
----
-
-# 🧪 **Pipex Tester - Test Your Pipex Implementation** 🧪
-
-![Pipex Tester](https://img.shields.io/badge/Pipex%20Tester-Project-blue?style=flat-square) ![C Programming](https://img.shields.io/badge/Language-C-green?style=flat-square) ![Shell Script](https://img.shields.io/badge/Script-Bash-yellow?style=flat-square) ![42 Network](https://img.shields.io/badge/42Network-Pipex%20Tester-lightblue?style=flat-square)
-
-Welcome to the **Pipex Tester**! 🎉 This project is designed to **automate testing** for your **Pipex** implementation. It ensures your pipex program behaves correctly by running predefined test cases and comparing outputs with the expected results.
-
----
-
 ## 📑 **Table of Contents**
 
 1. [Introduction](#introduction)
@@ -63,12 +51,12 @@ To install and use the **Pipex Tester**, follow these steps:
 
 1. **Clone the Repository**:
    ```bash
-   git clone git@github.com:kitearuba/pipex-tester.git
+   git clone git@github.com:kitearuba/pipex_tester.git
    ```
 
 2. **Navigate to the Project Directory**:
    ```bash
-   cd pipex-tester
+   cd pipex_tester
    ```
 
 3. **Make Your `pipex` Executable**:
