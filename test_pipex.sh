@@ -12,6 +12,9 @@ NC='\033[0m' # No Color
 total_tests=0
 passed_tests=0
 failed_tests=0
+valgrind_total_tests=0
+valgrind_passed_tests=0
+valgrind_failed_tests=0
 
 # Colorful Header with "chrrodri"
 echo -e "${MAGENTA}"
@@ -82,6 +85,23 @@ expected_fail_test() {
     divider
 }
 
+# Function to execute a Valgrind test case
+run_valgrind_test() {
+    ((valgrind_total_tests++))
+    local test_name="$1"
+    local valgrind_cmd="$2"
+
+    echo "Running ${test_name} with Valgrind..."
+    if eval "${valgrind_cmd}" 2>&1 | grep -q "ERROR SUMMARY: 0 errors"; then
+        echo -e "${GREEN}${test_name} passed (no memory leaks).${NC}"
+        ((valgrind_passed_tests++))
+    else
+        echo -e "${RED}${test_name} failed (memory leaks detected).${NC}"
+        ((valgrind_failed_tests++))
+    fi
+    divider
+}
+
 divider
 
 # Ensure input files exist for tests
@@ -125,6 +145,19 @@ run_test "Test 8: single word in input file" \
     '< input8.txt cat | wc -w > shell_output8.txt' \
     "output8.txt" "shell_output8.txt"
 
+# Additional Valgrind Tests
+run_valgrind_test "Valgrind Test 1: Basic cat and wc -l" \
+    'valgrind --leak-check=full ./pipex input.txt "cat" "wc -l" output_valgrind1.txt'
+
+run_valgrind_test "Valgrind Test 2: nonexistent input file" \
+    'valgrind --leak-check=full ./pipex nonexistent.txt "cat" "wc -l" output_valgrind2.txt'
+
+run_valgrind_test "Valgrind Test 3: invalid command" \
+    'valgrind --leak-check=full ./pipex input.txt "invalidcmd" "wc" output_valgrind3.txt'
+
+run_valgrind_test "Valgrind Test 4: empty input file" \
+    'valgrind --leak-check=full ./pipex empty.txt "cat" "wc -c" output_valgrind4.txt'
+
 divider
 
 # Summary of results
@@ -135,6 +168,13 @@ echo -e "${GREEN}Passed tests: ${passed_tests}/${total_tests}${NC}"
 echo -e "${RED}Failed tests: ${failed_tests}/${total_tests}${NC}"
 echo -e "${CYAN}====================${NC}"
 
-# Clean up
-rm -f output*.txt shell_output*.txt input6.txt input8.txt restricted.txt
+# Summary of Valgrind results
+echo -e "${CYAN}===================="
+echo -e " VALGRIND RESULTS"
+echo -e "====================${NC}"
+echo -e "${GREEN}Valgrind Passed tests: ${valgrind_passed_tests}/${valgrind_total_tests}${NC}"
+echo -e "${RED}Valgrind Failed tests: ${valgrind_failed_tests}/${valgrind_total_tests}${NC}"
+echo -e "${CYAN}====================${NC}"
 
+# Clean up
+rm -f output*.txt shell_output*.txt input6.txt input8.txt restricted.txt empty.txt
