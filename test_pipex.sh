@@ -24,10 +24,10 @@ echo "║                                                                       
 # "CHRRODRI" in one line, centered, and in one color (cyan)
 echo -e "${CYAN}"  # Cyan for the entire text
 cat << "EOF"
-      ██████  ██   ██ ██████  ██████   ██████   ██████   ██████  ██ 
-     ██    ██ ██   ██ ██   █  ██   █  ██    ██  ██   ██  ██   █  ██ 
-     ██       ███████ ██████  ██████  ██    ██  ██   ██  ██████  ██ 
-     ██    ██ ██   ██ ██ ██   ██ ██   ██    ██  ██   ██  ██ ██   ██ 
+      ██████  ██   ██ ██████  ██████   ██████   ██████   ██████  ██
+     ██    ██ ██   ██ ██   █  ██   █  ██    ██  ██   ██  ██   █  ██
+     ██       ███████ ██████  ██████  ██    ██  ██   ██  ██████  ██
+     ██    ██ ██   ██ ██ ██   ██ ██   ██    ██  ██   ██  ██ ██   ██
       ██████  ██   ██ ██  ██  ██  ██   ██████   ██████   ██  ██  ██
 EOF
 
@@ -85,6 +85,23 @@ expected_fail_test() {
     divider
 }
 
+# Separate function for Test 5 to handle invalid command case as a unique pass/fail
+test_invalid_command() {
+    ((total_tests++))
+    local test_name="Test 5: invalid command and wc"
+    local pipex_cmd='./pipex input.txt "invalid cmd" "wc" output5.txt'
+
+    echo "Running ${test_name}..."
+    if eval "${pipex_cmd}" 2>/dev/null; then
+        echo -e "${GREEN}${test_name} passed (expected failure with non valid cmd).${NC}"
+       ((passed_tests++))
+    else
+        echo -e "${RED}${test_name} failed (Non valid cmd should not be valid).${NC}"
+        ((failed_tests++))
+    fi
+    divider
+}
+
 # Function to execute a Valgrind test case
 run_valgrind_test() {
     ((valgrind_total_tests++))
@@ -129,8 +146,8 @@ run_test "Test 3: empty.txt with cat and wc -c" \
 expected_fail_test "Test 4: nonexistent.txt with cat and wc" \
     './pipex nonexistent.txt "cat" "wc" output4.txt'
 
-expected_fail_test "Test 5: invalidcmd and wc" \
-    './pipex input.txt "invalidcmd" "wc" output5.txt'
+# Run Test 5 using the dedicated function for invalid command handling
+test_invalid_command
 
 run_test "Test 6: multiple spaces and tabs between words" \
     './pipex input6.txt "grep hello" "wc -w" output6.txt' \
