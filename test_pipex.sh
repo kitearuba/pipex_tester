@@ -237,7 +237,6 @@ run_valgrind_test "Valgrind Test 4: Empty input file" \
 divider
 
 # Summary of results
-		ft_printf_fd(STDERR_FILENO, "pipex: %s: command not found\n", cmd[0]);
 echo -e "${CYAN}===================="
 echo -e "  TEST RESULTS"
 echo -e "====================${NC}"
