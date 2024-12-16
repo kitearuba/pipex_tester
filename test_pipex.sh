@@ -43,33 +43,6 @@ divider() {
     echo -e "${YELLOW}-------------------------------------------------------------${NC}"
 }
 
-#!/bin/bash
-
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-MAGENTA='\033[1;35m'
-CYAN='\033[0;36m'
-NC='\033[0m' # No Color
-
-# Variables for tracking test results
-total_tests=0
-passed_tests=0
-failed_tests=0
-valgrind_total_tests=0
-valgrind_passed_tests=0
-valgrind_failed_tests=0
-
-# Header
-echo -e "${CYAN}Welcome to the Pipex Tester Script!${NC}"
-echo "This script tests your Pipex program with various scenarios."
-
-# Section divider function for tests
-divider() {
-    echo -e "${YELLOW}-------------------------------------------------------------${NC}"
-}
-
 # Function to execute a test case and compare output
 run_test() {
     ((total_tests++))
