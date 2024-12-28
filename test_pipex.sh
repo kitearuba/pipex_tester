@@ -120,20 +120,27 @@ run_valgrind_test() {
     echo -e "${MAGENTA}Running Valgrind Test: ${test_name}${NC}"
     echo -e "${CYAN}Description: ${description}${NC}"
     echo -e "${YELLOW}Command: ${valgrind_cmd}${NC}"
-	
-	# Capture Valgrind output
+    
+    # Capture Valgrind output
     local valgrind_output
     valgrind_output=$(eval "${valgrind_cmd}" 2>&1)
 
-    # Print Valgrind output for debugging
+    # Print full Valgrind output for debugging
     echo "${valgrind_output}"
 
-    # Check for memory leaks
-    if eval "${valgrind_cmd}" 2>&1 | grep -q "ERROR SUMMARY: 0 errors"; then
+    # Check for memory errors and leaks
+    local error_summary_check
+    local leak_summary_check
+    error_summary_check=$(echo "${valgrind_output}" | grep -q "ERROR SUMMARY: 0 errors"; echo $?)
+    leak_summary_check=$(echo "${valgrind_output}" | grep -qE "definitely lost: [1-9][0-9]* bytes|indirectly lost: [1-9][0-9]* bytes|possibly lost: [1-9][0-9]* bytes|still reachable: [1-9][0-9]* bytes"; echo $?)
+
+    if [[ $error_summary_check -eq 0 && $leak_summary_check -ne 0 ]]; then
         echo -e "${GREEN}${test_name} passed (no memory leaks).${NC}"
         ((valgrind_passed_tests++))
     else
         echo -e "${RED}${test_name} failed (memory leaks detected).${NC}"
+        echo -e "${YELLOW}Valgrind detected leaks:${NC}"
+        echo "${valgrind_output}" | grep -E "LEAK SUMMARY|still reachable|definitely lost|indirectly lost|possibly lost"
         ((valgrind_failed_tests++))
     fi
     divider
@@ -192,19 +199,19 @@ run_test "Test 8: Single word in input file" \
 # Valgrind Tests
 run_valgrind_test "Valgrind Test 1: Basic cat and wc -l" \
     "This test checks for memory leaks when running a basic pipeline with 'cat' and 'wc -l'." \
-    'valgrind --leak-check=full ./pipex input.txt "cat" "wc -l" output_valgrind1.txt'
+    'valgrind --leak-check=full --show-leak-kinds=all ./pipex input.txt "cat" "wc -l" output_valgrind1.txt'
 
 run_valgrind_test "Valgrind Test 2: Non-existent input file" \
     "This test checks for memory leaks when the input file does not exist." \
-    'valgrind --leak-check=full ./pipex nonexistent.txt "cat" "wc -l" output_valgrind2.txt'
+    'valgrind --leak-check=full --show-leak-kinds=all ./pipex nonexistent.txt "cat" "wc -l" output_valgrind2.txt'
 
 run_valgrind_test "Valgrind Test 3: Invalid command" \
     "Checks for memory leaks when the first command is invalid." \
-    'valgrind --leak-check=full ./pipex input.txt "invalidcmd" "wc" output_valgrind3.txt'
+    'valgrind --leak-check=full --show-leak-kinds=all ./pipex input.txt "invalidcmd" "wc" output_valgrind3.txt'
 
 run_valgrind_test "Valgrind Test 4: Empty input file" \
     "Checks for memory leaks when the input file is empty." \
-    'valgrind --leak-check=full ./pipex empty.txt "cat" "wc -c" output_valgrind4.txt'
+    'valgrind --leak-check=full --show-leak-kinds=all ./pipex empty.txt "cat" "wc -c" output_valgrind4.txt'
 
 
 divider
